@@ -1,4 +1,6 @@
+
 name: Notepad Flutter CI/CD
+
 on:
   push:
     branches: [main]
@@ -13,6 +15,10 @@ jobs:
   build:
     name: Test and Build Android
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: flutter_application_1
 
     steps:
       - name: Checkout repository
@@ -32,13 +38,13 @@ jobs:
         run: flutter analyze --no-fatal-infos --no-fatal-warnings
 
       - name: Run tests
+        shell: bash
         run: |
-          if (Test-Path test) {
+          if [ -d test ]; then
             flutter test
-          } else {
-            Write-Host "No test directory found. Skipping tests."
-          }
-        shell: pwsh
+          else
+            echo "No test directory found. Skipping tests."
+          fi
 
       - name: Build APK
         run: flutter build apk --debug
@@ -47,5 +53,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: notepad-android-apk
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          path: flutter_application_1/build/app/outputs/flutter-apk/app-debug.apk
           retention-days: 7
